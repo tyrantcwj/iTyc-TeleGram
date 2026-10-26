@@ -42,10 +42,13 @@
 #include "styles/style_layers.h"
 #include "styles/style_menu_icons.h"
 #include "ui/boxes/confirm_box.h"
+#include "ui/toast/toast.h"
 #include "ui/widgets/popup_menu.h"
 #include "ui/widgets/menu/menu_add_action_callback_factory.h"
 #include "window/window_peer_menu.h"
 #include "window/window_session_controller.h"
+
+#include <unordered_set>
 
 namespace AyuUi {
 
@@ -1038,6 +1041,87 @@ void AddCreateFilterAction(not_null<Ui::PopupMenu*> menu,
 		u"过滤器"_q,
 		std::move(submenu),
 		&st::menuIconAddToFolder);
+}
+
+void AddBulkBlockAction(not_null<Ui::PopupMenu*> menu,
+						not_null<Window::SessionController*> controller,
+						const std::vector<HistoryItem*> &items) {
+	const auto &settings = AyuSettings::getInstance();
+	if (items.size() < 2 || !needToShowItem(settings.showAddFilterInContextMenu())) {
+		return;
+	}
+	auto selected = std::vector<not_null<HistoryItem*>>();
+	selected.reserve(items.size());
+	for (const auto item : items) {
+		if (item) {
+			selected.push_back(item);
+		}
+	}
+	if (selected.size() < 2) {
+		return;
+	}
+	menu->addAction(
+		u"批量屏蔽（%1 条）"_q.arg(int(selected.size())),
+		[=] {
+			auto &mutableSettings = AyuSettings::getInstance();
+			if (!mutableSettings.filtersEnabled()) {
+				mutableSettings.setFiltersEnabled(true);
+			}
+			if (!mutableSettings.filtersEnabledInChats()) {
+				mutableSettings.setFiltersEnabledInChats(true);
+			}
+
+			auto senderIds = std::unordered_set<int64>();
+			auto texts = std::vector<QString>();
+			auto seenTexts = std::unordered_set<QString>();
+			for (const auto item : selected) {
+				if (item->isService()) {
+					continue;
+				}
+				const auto historyDialogId = getDialogIdFromPeer(item->history()->peer);
+				const auto addSender = [&](PeerData *peer) {
+					if (!peer || (!peer->isUser() && !peer->isBroadcast())) {
+						return;
+					}
+					const auto dialogId = getDialogIdFromPeer(peer);
+					if (dialogId != historyDialogId) {
+						senderIds.insert(dialogId);
+					}
+				};
+				addSender(item->from());
+				if (const auto forwarded = item->Get<HistoryMessageForwarded>()) {
+					addSender(forwarded->originalSender);
+				}
+				if (!item->out()) {
+					const auto text = item->originalText().text.trimmed();
+					if (!text.isEmpty() && seenTexts.insert(text).second) {
+						texts.push_back(text);
+					}
+				}
+			}
+
+			auto newSenders = 0;
+			for (const auto id : senderIds) {
+				if (!mutableSettings.isShadowBanned(id)) {
+					++newSenders;
+				}
+				mutableSettings.addShadowBan(id);
+			}
+			const auto newContents = Settings::SaveLiteralFilters(
+				texts,
+				std::nullopt,
+				false);
+
+			Ui::Toast::Show(Ui::Toast::Config{
+				.text = (newSenders == 0 && newContents == 0)
+					? u"没有新增屏蔽内容"_q
+					: u"已批量屏蔽：%1 位发送者、%2 条内容"_q
+						.arg(newSenders)
+						.arg(newContents),
+				.adaptive = true,
+			});
+		},
+		&st::menuIconBlock);
 }
 
 } // namespace AyuUi

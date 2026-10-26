@@ -52,5 +52,8 @@ void AddCreateFilterAction(not_null<Ui::PopupMenu*> menu,
 						   not_null<Window::SessionController*> controller,
 						   HistoryItem *item,
 						   const QString &selectedText);
+void AddBulkBlockAction(not_null<Ui::PopupMenu*> menu,
+						not_null<Window::SessionController*> controller,
+						const std::vector<HistoryItem*> &items);
 
 }

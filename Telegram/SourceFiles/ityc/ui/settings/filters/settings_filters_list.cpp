@@ -297,6 +297,15 @@ void AyuFiltersList::setupContent(not_null<Window::SessionController*> controlle
 	if (shadowBan) {
 		initializeShadowBan(_content);
 	} else {
+		AddSkip(_content);
+		const auto bulkButton = _content->add(
+			object_ptr<Button>(
+				_content,
+				rpl::single(u"批量添加屏蔽词"_q),
+				st::settingsButtonNoIcon));
+		bulkButton->addClickHandler([=, dialogId = dialogId] {
+			controller->show(BulkLiteralFilterBox(dialogId));
+		});
 		initializeSharedFilters(_content);
 	}
 

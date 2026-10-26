@@ -28,6 +28,8 @@
 #include "ui/toast/toast.h"
 #include "ui/widgets/checkbox.h"
 #include "ui/widgets/labels.h"
+
+#include <unordered_set>
 #include "ui/widgets/fields/input_field.h"
 #include "ui/wrap/slide_wrap.h"
 #include "ui/wrap/vertical_layout.h"
@@ -337,6 +339,114 @@ void SaveLiteralFilter(const QString &phrase, std::optional<long long> dialogId)
 			});
 		});
 	});
+}
+
+int SaveLiteralFilters(
+		const std::vector<QString> &phrases,
+		std::optional<long long> dialogId,
+		bool showToast) {
+	auto &settings = AyuSettings::getInstance();
+	if (!settings.filtersEnabled()) {
+		settings.setFiltersEnabled(true);
+	}
+	if (!settings.filtersEnabledInChats()) {
+		settings.setFiltersEnabledInChats(true);
+	}
+
+	auto existing = std::unordered_set<std::string>();
+	for (const auto &filter : AyuDatabase::getAllRegexFilters()) {
+		if (filter.dialogId == dialogId) {
+			existing.insert(filter.text);
+		}
+	}
+
+	auto filters = std::vector<RegexFilter>();
+	auto seen = std::unordered_set<QString>();
+	for (const auto &phrase : phrases) {
+		const auto text = phrase.trimmed();
+		if (text.isEmpty() || !seen.insert(text).second) {
+			continue;
+		}
+		auto escaped = EscapeLiteralRegex(text).toStdString();
+		if (existing.contains(escaped)) {
+			continue;
+		}
+		RegexFilter filter;
+		filter.id = generate_uuid_bytes();
+		filter.text = std::move(escaped);
+		filter.enabled = true;
+		filter.caseInsensitive = true;
+		filter.reversed = false;
+		filter.dialogId = dialogId;
+		filters.push_back(std::move(filter));
+	}
+
+	const auto count = int(filters.size());
+	if (filters.empty()) {
+		if (showToast) {
+			Ui::Toast::Show(Ui::Toast::Config{
+				.text = u"没有新增屏蔽内容"_q,
+				.adaptive = true,
+			});
+		}
+		return 0;
+	}
+
+	crl::async([=] {
+		for (const auto &filter : filters) {
+			AyuDatabase::addRegexFilter(filter);
+		}
+		FiltersCacheController::rebuildCache();
+		crl::on_main([=] {
+			FiltersCacheController::fireUpdate();
+			if (showToast) {
+				Ui::Toast::Show(Ui::Toast::Config{
+					.text = (dialogId.has_value()
+						? u"已在此对话批量屏蔽 %1 条内容"_q
+						: u"已批量屏蔽 %1 条内容"_q).arg(count),
+					.adaptive = true,
+				});
+			}
+		});
+	});
+	return count;
+}
+
+void BulkLiteralFilterBuilder(
+		not_null<Ui::GenericBox*> box,
+		std::optional<long long> dialogId) {
+	box->setTitle(rpl::single(u"批量添加屏蔽词"_q));
+	box->addRow(
+		object_ptr<Ui::FlatLabel>(
+			box->verticalLayout(),
+			rpl::single(u"每行一条，保存后包含这些内容的消息会被隐藏。"_q),
+			st::boxLabel),
+		st::boxPadding);
+	const auto input = box->addRow(
+		object_ptr<Ui::InputField>(
+			box->verticalLayout(),
+			st::windowFilterNameInput,
+			Ui::InputField::Mode::MultiLine,
+			rpl::single(u"每行一条要屏蔽的内容"_q)),
+		st::markdownLinkFieldPadding);
+	box->addButton(rpl::single(u"保存"_q), [=] {
+		const auto lines = input->getTextWithTags().text.split('\n');
+		if (SaveLiteralFilters(
+				std::vector<QString>(lines.begin(), lines.end()),
+				dialogId) > 0) {
+			box->closeBox();
+		}
+	});
+	box->addButton(tr::lng_cancel(), [=] {
+		box->closeBox();
+	});
+	box->setFocusCallback([=] {
+		input->setFocusFast();
+	});
+}
+
+object_ptr<Ui::GenericBox> BulkLiteralFilterBox(std::optional<long long> dialogId) {
+	return Box(BulkLiteralFilterBuilder, dialogId);
 }
 
 } // namespace Settings

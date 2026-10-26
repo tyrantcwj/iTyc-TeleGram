@@ -1416,6 +1416,15 @@ void AddMessageActions(
 			list->controller(),
 			request.item,
 			request.selectedText.rich.text);
+		if (request.selectedItems.size() > 1) {
+			const auto owner = &request.navigation->session().data();
+			auto items = std::vector<HistoryItem*>();
+			items.reserve(request.selectedItems.size());
+			for (const auto &selected : request.selectedItems) {
+				items.push_back(owner->message(selected.msgId));
+			}
+			AyuUi::AddBulkBlockAction(menu, list->controller(), items);
+		}
 		AyuUi::AddHideMessageAction(menu, request.item);
 		AyuUi::AddUserMessagesAction(menu, request.item);
 		AyuUi::AddRepeatMessageAction(menu, request.item, context);
