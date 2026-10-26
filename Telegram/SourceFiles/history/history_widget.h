@@ -307,6 +307,7 @@ public:
 	void forwardSelected();
 	void confirmDeleteSelected();
 	void messageShotSelected();
+	void bulkBlockSelected();
 	void clearSelected();
 
 	[[nodiscard]] SendMenu::Details sendMenuDetails() const override;

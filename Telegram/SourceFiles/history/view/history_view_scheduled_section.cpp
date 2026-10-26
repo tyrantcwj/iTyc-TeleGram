@@ -69,6 +69,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 
 // iTycGram includes
 #include "ityc/features/message_shot/message_shot.h"
+#include "ityc/ui/context_menu/context_menu.h"
 
 
 namespace HistoryView {
@@ -220,6 +221,15 @@ ScheduledWidget::ScheduledWidget(
 	_topBar->messageShotSelectionRequest(
 	) | rpl::on_next([=] {
 		AyuFeatures::MessageShot::Wrapper(_inner, [=] { clearSelected(); });
+	}, _topBar->lifetime());
+	_topBar->bulkBlockSelectionRequest(
+	) | rpl::on_next([=] {
+		auto ids = MessageIdsList();
+		for (const auto &selected : _inner->getSelectedItems()) {
+			ids.push_back(selected.msgId);
+		}
+		AyuUi::ApplyBulkContentBlock(&_inner->session().data(), ids);
+		clearSelected();
 	}, _topBar->lifetime());
 	_topBar->clearSelectionRequest(
 	) | rpl::on_next([=] {

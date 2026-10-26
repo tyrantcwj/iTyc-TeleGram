@@ -116,6 +116,9 @@ public:
 	[[nodiscard]] rpl::producer<> messageShotSelectionRequest() const {
 		return _messageShotSelection.events();
 	}
+	[[nodiscard]] rpl::producer<> bulkBlockSelectionRequest() const {
+		return _bulkBlockSelection.events();
+	}
 	[[nodiscard]] rpl::producer<> clearSelectionRequest() const {
 		return _clearSelection.events();
 	}
@@ -236,7 +239,7 @@ private:
 	Ui::Animations::Simple _searchShown;
 
 	object_ptr<Ui::RoundButton> _clear;
-	object_ptr<Ui::RoundButton> _forward, _sendNow, _delete, _messageShot;
+	object_ptr<Ui::RoundButton> _forward, _sendNow, _delete, _messageShot, _bulkBlock;
 	object_ptr<Ui::InputField> _searchField = { nullptr };
 	object_ptr<Ui::FadeWrapScaled<Ui::IconButton>> _chooseFromUser
 		= { nullptr };
@@ -288,6 +291,7 @@ private:
 	rpl::event_stream<> _sendNowSelection;
 	rpl::event_stream<> _deleteSelection;
 	rpl::event_stream<> _messageShotSelection;
+	rpl::event_stream<> _bulkBlockSelection;
 	rpl::event_stream<> _clearSelection;
 	rpl::event_stream<> _cancelChooseForReport;
 

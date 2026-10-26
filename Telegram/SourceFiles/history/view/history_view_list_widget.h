@@ -799,6 +799,7 @@ private:
 	bool overSelectedItems() const;
 	void clearTextSelection();
 	void clearSelected();
+	void selectAll();
 	void setTextSelection(
 		not_null<Element*> view,
 		MessageSelection selection);

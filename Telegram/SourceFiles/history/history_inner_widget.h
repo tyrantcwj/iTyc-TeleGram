@@ -180,6 +180,7 @@ public:
 	[[nodiscard]] auto getSelectionState() const
 		-> HistoryView::TopBarWidget::SelectedState;
 	void clearSelected(bool onlyTextSelection = false);
+	void selectAll();
 	[[nodiscard]] MessageIdsList getSelectedItems() const;
 	[[nodiscard]] MessageIdsList getSelectedForwardItems() const;
 	[[nodiscard]] auto getSelectedEphemeral() const

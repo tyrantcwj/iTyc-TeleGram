@@ -136,6 +136,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 // iTycGram includes
 #include "ityc/ityc_settings.h"
 #include "ityc/features/message_shot/message_shot.h"
+#include "ityc/ui/context_menu/context_menu.h"
 #include "base/unixtime.h"
 
 
@@ -542,6 +543,15 @@ ChatWidget::ChatWidget(
 	_topBar->messageShotSelectionRequest(
 	) | rpl::on_next([=] {
 		AyuFeatures::MessageShot::Wrapper(_inner, [=] { clearSelected(); });
+	}, _topBar->lifetime());
+	_topBar->bulkBlockSelectionRequest(
+	) | rpl::on_next([=] {
+		auto ids = MessageIdsList();
+		for (const auto &selected : _inner->getSelectedItems()) {
+			ids.push_back(selected.msgId);
+		}
+		AyuUi::ApplyBulkContentBlock(&_inner->session().data(), ids);
+		clearSelected();
 	}, _topBar->lifetime());
 	_topBar->forwardSelectionRequest(
 	) | rpl::on_next([=] {

@@ -7,11 +7,16 @@
 #pragma once
 
 #include "data/data_document.h"
+#include "data/data_types.h"
 #include "ui/widgets/popup_menu.h"
 #include "window/window_peer_menu.h"
 #include "window/window_session_controller.h"
 
 #include "ityc/ityc_settings.h"
+
+namespace Data {
+class Session;
+} // namespace Data
 
 namespace HistoryView {
 enum class Context : char;
@@ -55,5 +60,9 @@ void AddCreateFilterAction(not_null<Ui::PopupMenu*> menu,
 void AddBulkBlockAction(not_null<Ui::PopupMenu*> menu,
 						not_null<Window::SessionController*> controller,
 						const std::vector<HistoryItem*> &items);
+void ApplyBulkContentBlock(const std::vector<not_null<HistoryItem*>> &items);
+void ApplyBulkContentBlock(
+	not_null<Data::Session*> data,
+	const MessageIdsList &ids);
 
 }

@@ -222,6 +222,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "ityc/features/filters/filters_cache_controller.h"
 #include "ityc/utils/telegram_helpers.h"
 #include "ityc/features/message_shot/message_shot.h"
+#include "ityc/ui/context_menu/context_menu.h"
 #include "ityc/features/forward/ityc_forward.h"
 #include "boxes/abstract_box.h"
 
@@ -1227,6 +1228,10 @@ HistoryWidget::HistoryWidget(
 	_topBar->messageShotSelectionRequest(
 	) | rpl::on_next([=] {
 		messageShotSelected();
+	}, _topBar->lifetime());
+	_topBar->bulkBlockSelectionRequest(
+	) | rpl::on_next([=] {
+		bulkBlockSelected();
 	}, _topBar->lifetime());
 	_topBar->clearSelectionRequest(
 	) | rpl::on_next([=] {
@@ -6778,7 +6783,10 @@ bool HistoryWidget::eventFilter(QObject *obj, QEvent *e) {
 	if (e->type() == QEvent::KeyPress) {
 		const auto k = static_cast<QKeyEvent*>(e);
 		if ((k->modifiers() & kCommonModifiers) == Qt::ControlModifier) {
-			if (k->key() == Qt::Key_Up) {
+			if (k->key() == Qt::Key_A && _nonEmptySelection && _list) {
+				_list->selectAll();
+				return true;
+			} else if (k->key() == Qt::Key_Up) {
 #ifdef Q_OS_MAC
 				// Cmd + Up is used instead of Home.
 				if (fieldHasSendText()
@@ -9343,6 +9351,11 @@ void HistoryWidget::keyPressEvent(QKeyEvent *e) {
 	} else if ((e->key() == Qt::Key_O)
 		&& (e->modifiers() == Qt::ControlModifier)) {
 		chooseAttach();
+	} else if ((e->key() == Qt::Key_A)
+		&& (commonModifiers == Qt::ControlModifier)
+		&& _nonEmptySelection
+		&& _list) {
+		_list->selectAll();
 	} else {
 		e->ignore();
 	}
@@ -11041,6 +11054,14 @@ void HistoryWidget::messageShotSelected() {
 	AyuFeatures::MessageShot::Wrapper(
 		_list.data(),
 		[=] { clearSelected(); });
+}
+
+void HistoryWidget::bulkBlockSelected() {
+	if (!_list) {
+		return;
+	}
+	AyuUi::ApplyBulkContentBlock(&session().data(), _list->getSelectedItems());
+	clearSelected();
 }
 
 void HistoryWidget::escape() {

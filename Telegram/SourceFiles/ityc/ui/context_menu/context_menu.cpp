@@ -1043,6 +1043,42 @@ void AddCreateFilterAction(not_null<Ui::PopupMenu*> menu,
 		&st::menuIconAddToFolder);
 }
 
+void ApplyBulkContentBlock(const std::vector<not_null<HistoryItem*>> &items) {
+	auto &settings = AyuSettings::getInstance();
+	if (!settings.filtersEnabled()) {
+		settings.setFiltersEnabled(true);
+	}
+	if (!settings.filtersEnabledInChats()) {
+		settings.setFiltersEnabledInChats(true);
+	}
+
+	auto texts = std::vector<QString>();
+	auto seenTexts = std::unordered_set<QString>();
+	for (const auto item : items) {
+		if (item->isService() || item->out()) {
+			continue;
+		}
+		const auto text = item->originalText().text.trimmed();
+		if (!text.isEmpty() && seenTexts.insert(text).second) {
+			texts.push_back(text);
+		}
+	}
+	Settings::SaveLiteralFilters(texts, std::nullopt, true);
+}
+
+void ApplyBulkContentBlock(
+		not_null<Data::Session*> data,
+		const MessageIdsList &ids) {
+	auto items = std::vector<not_null<HistoryItem*>>();
+	items.reserve(ids.size());
+	for (const auto &id : ids) {
+		if (const auto item = data->message(id)) {
+			items.push_back(item);
+		}
+	}
+	ApplyBulkContentBlock(items);
+}
+
 void AddBulkBlockAction(not_null<Ui::PopupMenu*> menu,
 						not_null<Window::SessionController*> controller,
 						const std::vector<HistoryItem*> &items) {
@@ -1062,65 +1098,7 @@ void AddBulkBlockAction(not_null<Ui::PopupMenu*> menu,
 	}
 	menu->addAction(
 		u"批量屏蔽（%1 条）"_q.arg(int(selected.size())),
-		[=] {
-			auto &mutableSettings = AyuSettings::getInstance();
-			if (!mutableSettings.filtersEnabled()) {
-				mutableSettings.setFiltersEnabled(true);
-			}
-			if (!mutableSettings.filtersEnabledInChats()) {
-				mutableSettings.setFiltersEnabledInChats(true);
-			}
-
-			auto senderIds = std::unordered_set<int64>();
-			auto texts = std::vector<QString>();
-			auto seenTexts = std::unordered_set<QString>();
-			for (const auto item : selected) {
-				if (item->isService()) {
-					continue;
-				}
-				const auto historyDialogId = getDialogIdFromPeer(item->history()->peer);
-				const auto addSender = [&](PeerData *peer) {
-					if (!peer || (!peer->isUser() && !peer->isBroadcast())) {
-						return;
-					}
-					const auto dialogId = getDialogIdFromPeer(peer);
-					if (dialogId != historyDialogId) {
-						senderIds.insert(dialogId);
-					}
-				};
-				addSender(item->from());
-				if (const auto forwarded = item->Get<HistoryMessageForwarded>()) {
-					addSender(forwarded->originalSender);
-				}
-				if (!item->out()) {
-					const auto text = item->originalText().text.trimmed();
-					if (!text.isEmpty() && seenTexts.insert(text).second) {
-						texts.push_back(text);
-					}
-				}
-			}
-
-			auto newSenders = 0;
-			for (const auto id : senderIds) {
-				if (!mutableSettings.isShadowBanned(id)) {
-					++newSenders;
-				}
-				mutableSettings.addShadowBan(id);
-			}
-			const auto newContents = Settings::SaveLiteralFilters(
-				texts,
-				std::nullopt,
-				false);
-
-			Ui::Toast::Show(Ui::Toast::Config{
-				.text = (newSenders == 0 && newContents == 0)
-					? u"没有新增屏蔽内容"_q
-					: u"已批量屏蔽：%1 位发送者、%2 条内容"_q
-						.arg(newSenders)
-						.arg(newContents),
-				.adaptive = true,
-			});
-		},
+		[=] { ApplyBulkContentBlock(selected); },
 		&st::menuIconBlock);
 }
 

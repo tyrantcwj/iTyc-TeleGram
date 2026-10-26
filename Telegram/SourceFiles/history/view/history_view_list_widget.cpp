@@ -2088,6 +2088,21 @@ void ListWidget::showEditCaptionUploadLayer(not_null<HistoryItem*> item) {
 	}
 }
 
+void ListWidget::selectAll() {
+	if (!hasSelectedItems()) {
+		return;
+	}
+	clearTextSelection();
+	for (const auto view : _items) {
+		if (int(_selected.size()) >= MaxSelectedItems) {
+			break;
+		}
+		changeSelection(_selected, view->data(), SelectAction::Select);
+	}
+	pushSelectedItems();
+	update();
+}
+
 void ListWidget::clearSelected() {
 	if (_selected.empty()) {
 		return;
@@ -3705,6 +3720,13 @@ void ListWidget::keyPressEvent(QKeyEvent *e) {
 	const auto key = e->key();
 	const auto modifiers = e->modifiers()
 		& ~(Qt::KeypadModifier | Qt::GroupSwitchModifier);
+	if (key == Qt::Key_A
+		&& (modifiers & (Qt::ControlModifier | Qt::MetaModifier))
+		&& !(modifiers & ~(Qt::ControlModifier | Qt::MetaModifier))
+		&& hasSelectedItems()) {
+		selectAll();
+		return;
+	}
 	const auto hasModifiers = (modifiers != Qt::NoModifier);
 	if (_middleClickAutoscroll.active() && key == Qt::Key_Escape) {
 		_middleClickAutoscroll.stop();

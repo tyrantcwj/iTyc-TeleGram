@@ -5363,6 +5363,30 @@ auto HistoryInner::getSelectionState() const
 	return result;
 }
 
+void HistoryInner::selectAll() {
+	if (!hasSelectedItems() || hasSelectRestriction() || !_history) {
+		return;
+	}
+	clearTextSelection();
+	const auto selectHistory = [&](History *history) {
+		if (!history) {
+			return;
+		}
+		for (const auto &block : history->blocks) {
+			for (const auto &view : block->messages) {
+				if (int(_selected.size()) >= MaxSelectedItems) {
+					return;
+				}
+				changeSelection(&_selected, view->data(), SelectAction::Select);
+			}
+		}
+	};
+	selectHistory(_history);
+	selectHistory(_migrated);
+	update();
+	_widget->updateTopBarSelection();
+}
+
 void HistoryInner::clearSelected(bool onlyTextSelection) {
 	auto changed = false;
 	if (!onlyTextSelection && !_selected.empty()) {
