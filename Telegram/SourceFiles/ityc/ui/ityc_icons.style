@@ -1,0 +1,82 @@
+/*
+ * This is the source code of iTycGram for Desktop.
+ *
+ * We do not and cannot prevent the use of our code,
+ * but be respectful and credit the original author.
+ *
+ * Copyright @Radolyn, 2025
+ */
+
+using "ui/colors.palette";
+using "ui/chat/chat.style";
+using "ui/widgets/widgets.style";
+using "dialogs/dialogs.style";
+
+ayuGhostIcon: icon {{ "ityc/ghost", menuIconColor }};
+ayuGhostModeGlobalIcon: icon {{ "ityc/ghost_mode_global", historyPeerUserpicFg }};
+ayuEditsHistoryIcon: icon {{ "ityc/edits_history", menuIconColor }};
+ayuLReadMenuIcon: icon {{ "ityc/lread", menuIconColor }};
+ayuSReadMenuIcon: icon {{ "ityc/sread", menuIconColor }};
+ayuStreamerModeMenuIcon: icon {{ "ityc/streamer", menuIconColor }};
+ayuToBeginningMenuIcon: icon {{ "ityc/to_beginning", menuIconColor }};
+ayuRepeatMenuIcon: icon {{ "ityc/repeat", menuIconColor }};
+ayuContactsMutualIcon: icon {{ "ityc/contacts_mutual", contactsStatusFg }};
+ayuContactsMutualIconOver: icon {{ "ityc/contacts_mutual", contactsStatusFgOver }};
+
+messageFieldAttachIcon: icon {{ "ityc/message_field/attach", menuIconColor }};
+messageFieldCommandsIcon: icon {{ "ityc/message_field/commands", menuIconColor }};
+messageFieldEmojiIcon: icon {{ "ityc/message_field/emoji", menuIconColor }};
+messageFieldVoiceIcon: icon {{ "ityc/message_field/voice", menuIconColor }};
+messageFieldTTLIcon: icon {{ "ityc/message_field/ttl", menuIconColor }};
+messageFieldCocoonAiIcon: icon{
+	{ size(24px, 24px), transparent },
+	{ "chat/ai_letters-20x20", menuIconColor, point(2px, 2px) },
+	{ "chat/ai_star1-20x20", menuIconColor, point(2px, 2px) },
+	{ "chat/ai_star2-20x20", menuIconColor, point(2px, 2px) },
+};
+
+inChannelBadgeIcon: icon {{ "ityc/channel", msgInDateFg }};
+inChannelBadgeSelectedIcon: icon {{ "ityc/channel", msgInDateFgSelected }};
+outChannelBadgeIcon: icon {{ "ityc/channel", msgOutDateFg }};
+outChannelBadgeSelectedIcon: icon {{ "ityc/channel", msgOutDateFgSelected }};
+
+infoExteraOfficialBadge: icon {{ "ityc/extera_official", profileVerifiedCheckBg }};
+infoExteraSupporterBadge: icon {{ "ityc/extera_badge", profileVerifiedCheckBg }};
+
+winEnterWithGuestIcon: icon {{ "ityc/ghost_tray", windowFg }};
+
+editedIcon: IconEmoji{
+    icon: icon{{ "ityc/edited", windowFg }};
+    padding: margins(0px, 0px, 0px, 0px);
+    useIconColor: false;
+}
+
+deletedIcon: IconEmoji{
+    icon: icon{{ "ityc/trash_bin", windowFg }};
+    padding: margins(0px, 0px, 0px, 0px);
+    useIconColor: false;
+}
+
+burntIcon: IconEmoji{
+    icon: icon{{ "ityc/burnt", windowFg }};
+    padding: margins(0px, 0px, 0px, 0px);
+    useIconColor: false;
+}
+
+dialogsExteraOfficialIcon: ThreeStateIcon {
+	icon: icon {{ "ityc/dialogs_extera_official", dialogsVerifiedIconBg }};
+	over: icon {{ "ityc/dialogs_extera_official", dialogsVerifiedIconBgOver }};
+	active: icon {{ "ityc/dialogs_extera_official", dialogsVerifiedIconBgActive }};
+}
+dialogsExteraSupporterIcon: ThreeStateIcon {
+	icon: icon {{ "ityc/dialogs_extera_supporter", dialogsVerifiedIconBg }};
+	over: icon {{ "ityc/dialogs_extera_supporter", dialogsVerifiedIconBgOver }};
+	active: icon {{ "ityc/dialogs_extera_supporter", dialogsVerifiedIconBgActive }};
+}
+
+ayuHistoryFileInPlugin: icon {{ "ityc/history_file_plugin", historyFileInIconFg }};
+ayuHistoryFileInPluginSelected: icon {{ "ityc/history_file_plugin", historyFileInIconFgSelected }};
+ayuHistoryFileOutPlugin: icon {{ "ityc/history_file_plugin", historyFileOutIconFg }};
+ayuHistoryFileOutPluginSelected: icon {{ "ityc/history_file_plugin", historyFileOutIconFgSelected }};
+
+menuIconClearAttention: icon {{ "menu/clear", menuIconAttentionColor }};

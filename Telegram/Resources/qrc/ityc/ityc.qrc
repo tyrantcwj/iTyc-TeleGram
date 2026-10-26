@@ -1,0 +1,45 @@
+<RCC>
+    <qresource prefix="/gui">
+        <file alias="art/ityc/alt/app.png">../../art/ityc/alt/app.png</file>
+        <file alias="art/ityc/alt/app.svg">../../art/ityc/alt/app.svg</file>
+        <file alias="art/ityc/alt/app_icon.ico">../../art/ityc/alt/app_icon.ico</file>
+        <file alias="art/ityc/bard/app.png">../../art/ityc/bard/app.png</file>
+        <file alias="art/ityc/bard/app.svg">../../art/ityc/bard/app.svg</file>
+        <file alias="art/ityc/bard/app_icon.ico">../../art/ityc/bard/app_icon.ico</file>
+        <file alias="art/ityc/chibi/app.png">../../art/ityc/chibi/app.png</file>
+        <file alias="art/ityc/chibi/app_icon.ico">../../art/ityc/chibi/app_icon.ico</file>
+        <file alias="art/ityc/chibi2/app.png">../../art/ityc/chibi2/app.png</file>
+        <file alias="art/ityc/chibi2/app_icon.ico">../../art/ityc/chibi2/app_icon.ico</file>
+        <file alias="art/ityc/default/app.png">../../art/ityc/default/app.png</file>
+        <file alias="art/ityc/default/app.svg">../../art/ityc/default/app.svg</file>
+        <file alias="art/ityc/default/app_icon.ico">../../art/ityc/default/app_icon.ico</file>
+        <file alias="art/ityc/discord/app.png">../../art/ityc/discord/app.png</file>
+        <file alias="art/ityc/discord/app.svg">../../art/ityc/discord/app.svg</file>
+        <file alias="art/ityc/discord/app_icon.ico">../../art/ityc/discord/app_icon.ico</file>
+        <file alias="art/ityc/extera/app.png">../../art/ityc/extera/app.png</file>
+        <file alias="art/ityc/extera/app.svg">../../art/ityc/extera/app.svg</file>
+        <file alias="art/ityc/extera/app_icon.ico">../../art/ityc/extera/app_icon.ico</file>
+        <file alias="art/ityc/extera2/app.png">../../art/ityc/extera2/app.png</file>
+        <file alias="art/ityc/extera2/app.svg">../../art/ityc/extera2/app.svg</file>
+        <file alias="art/ityc/extera2/app_icon.ico">../../art/ityc/extera2/app_icon.ico</file>
+        <file alias="art/ityc/nothing/app.png">../../art/ityc/nothing/app.png</file>
+        <file alias="art/ityc/nothing/app.svg">../../art/ityc/nothing/app.svg</file>
+        <file alias="art/ityc/nothing/app_icon.ico">../../art/ityc/nothing/app_icon.ico</file>
+        <file alias="art/ityc/spotify/app.png">../../art/ityc/spotify/app.png</file>
+        <file alias="art/ityc/spotify/app.svg">../../art/ityc/spotify/app.svg</file>
+        <file alias="art/ityc/spotify/app_icon.ico">../../art/ityc/spotify/app_icon.ico</file>
+        <file alias="art/ityc/win95/app.png">../../art/ityc/win95/app.png</file>
+        <file alias="art/ityc/win95/app_icon.ico">../../art/ityc/win95/app_icon.ico</file>
+        <file alias="art/ityc/yaplus/app.png">../../art/ityc/yaplus/app.png</file>
+        <file alias="art/ityc/yaplus/app.svg">../../art/ityc/yaplus/app.svg</file>
+        <file alias="art/ityc/yaplus/app_icon.ico">../../art/ityc/yaplus/app_icon.ico</file>
+        <file alias="icons/ityc/nocover.svg">../../icons/ityc/nocover.svg</file>
+        <file alias="icons/ityc/donates/boosty.svg">../../icons/ityc/donates/boosty.svg</file>
+        <file alias="icons/ityc/donates/ton.svg">../../icons/ityc/donates/ton.svg</file>
+        <file alias="icons/ityc/donates/bitcoin.svg">../../icons/ityc/donates/bitcoin.svg</file>
+        <file alias="icons/ityc/donates/ethereum.svg">../../icons/ityc/donates/ethereum.svg</file>
+        <file alias="icons/ityc/donates/solana.svg">../../icons/ityc/donates/solana.svg</file>
+        <file alias="icons/ityc/donates/tron.svg">../../icons/ityc/donates/tron.svg</file>
+        <file alias="icons/ityc/donates/support_logo.svg">../../icons/ityc/donates/support_logo.svg</file>
+    </qresource>
+</RCC>
